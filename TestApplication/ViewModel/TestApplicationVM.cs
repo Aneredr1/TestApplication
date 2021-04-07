@@ -23,6 +23,8 @@ namespace TestApplication.ViewModel
         public static Nomenclature SelectedNomenclature { get; set; }
 
         #region Получение данных
+
+        //Получение номенклатур
         private List<Nomenclature> allNomenclature = DataWorker.Sel_nomenclature();
         public List<Nomenclature> AllNomenclature
         {
@@ -33,6 +35,7 @@ namespace TestApplication.ViewModel
                 NotifyPropertyChanged("AllNomenclature");
             }
         }
+        //Получение пользователей
         private List<User> allUsers = DataWorker.Sel_users();
         public List<User> AllUsers
         {
@@ -58,11 +61,52 @@ namespace TestApplication.ViewModel
             EditNomenclatureWindow editNomenclatureWindow = new EditNomenclatureWindow(nomenclature);
             SetCenterPositionAndOpen(editNomenclatureWindow);
         }
-        //Открытие программы после авторизации
+       // Открытие главного окна после авторизации
+        private void OpenMainWindowMethod(Window wnd)
+        {
+
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            wnd.Close();
+        }
+
 
         #endregion
 
         #region Комманды для открытия окон
+
+        //Открытие главного окна и авторизация
+        private RelayCommand openMainWindow;
+        public RelayCommand OpenMainWindow
+        {
+            get
+            {
+                return openMainWindow ?? new RelayCommand(obj =>
+                {
+                    bool IsAuth = false;
+                    Window wnd = obj as Window;
+                    ComboBox comboBox = wnd.FindName("LoginBlock") as ComboBox;
+                    PasswordBox passwordBox = wnd.FindName("PassBlock") as PasswordBox;
+                    
+
+                    if (comboBox.Text == null)
+                    {
+                        ShowMessage("Выберите логин");
+                    }
+                    else
+                    {
+                    IsAuth = DataWorker.Check_authentification(comboBox.Text, passwordBox.Password);
+                    }
+                    if (IsAuth)
+                    {
+                        OpenMainWindowMethod(wnd);
+                    }
+                    else ShowMessage("Такой пары логин/пароль нет");
+                }
+                    );
+            }
+        }
+
         //Создание номенклатуры
         private RelayCommand openAddNomenclatureWindow;
         public RelayCommand OpenAddNomenclatureWindow
@@ -76,6 +120,7 @@ namespace TestApplication.ViewModel
                 );
             }
         }
+
         //Редактирование номенклатуры
         private RelayCommand openEditNomenclatureWindow;
         public RelayCommand OpenEditNomenclatureWindow
