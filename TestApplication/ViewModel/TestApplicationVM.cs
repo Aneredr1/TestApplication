@@ -12,6 +12,10 @@ namespace TestApplication.ViewModel
 {
     public class TestApplicationVM : INotifyPropertyChanged
     {
+        public TestApplicationVM()
+            {
+                SetNullValuesToProperties();
+            }
         //Свойства для номенклатуры
         public static int Id { get; set; } 
         public static string Name { get; set; }
